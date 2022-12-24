@@ -27,3 +27,33 @@ Created on Tue Dec 20 15:21:10 2022
 # normalize images
 
 # dimensionality reduction?
+
+
+import torch
+import os
+
+src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
+
+# now we use the os package to create a list of files in the directory and rename
+# os.listdir() finds the files
+# os.rename() renames them
+
+# writing the function
+def main():
+    
+    # iterating across each file in the directory 
+    # defines new name and location
+    folder = "Flags/Russian_Flag"
+    for count, filename in enumerate(os.listdir(folder)):
+        dst = f"{folder} {str(count)}.jpg"
+        src = f"{folder}/{filename}"
+        dst = f"{folder}/{dst}"
+    
+        # renaming based on list
+        os.rename(src, dst)
+
+# Driver code
+if __name__ == '__main__':
+    
+    # Calling main() function
+    main()
