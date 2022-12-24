@@ -39,13 +39,13 @@ src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_
 # os.rename() renames them
 
 # writing the function
-def main():
+def mass_rename():
     
     # iterating across each file in the directory 
     # defines new name and location
-    folder = "Flags/Russian_Flag"
+    folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/Russian_Flag"
     for count, filename in enumerate(os.listdir(folder)):
-        dst = f"{folder} {str(count)}.jpg"
+        dst = f"Russian_{str(count)}.jpg"
         src = f"{folder}/{filename}"
         dst = f"{folder}/{dst}"
     
@@ -53,7 +53,7 @@ def main():
         os.rename(src, dst)
 
 # Driver code
-if __name__ == '__main__':
+if __name__ == '__mass_rename__':
     
     # Calling main() function
-    main()
+    mass_rename()
