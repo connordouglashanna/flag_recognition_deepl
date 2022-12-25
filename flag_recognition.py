@@ -37,23 +37,23 @@ src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_
 # now we use the os package to create a list of files in the directory and rename
 # os.listdir() finds the files
 # os.rename() renames them
+country = []
+last_fold = []
 
-# writing the function
-def mass_rename():
+df = merge(country, last_fold)
+
+for i in df:
     
-    # iterating across each file in the directory 
-    # defines new name and location
-    folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/Russian_Flag"
+    # specifying the folder the country flags are located in
+    folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/{last_fold}"
+    # specifying the name for use in the renaming loop
+    country = country
+    
+    # now iterating across each file in the directory
     for count, filename in enumerate(os.listdir(folder)):
-        dst = f"Russian_{str(count)}.jpg"
+        dst = f"{country}_{str(count)}.jpg"
         src = f"{folder}/{filename}"
         dst = f"{folder}/{dst}"
     
         # renaming based on list
         os.rename(src, dst)
-
-# Driver code
-if __name__ == '__mass_rename__':
-    
-    # Calling main() function
-    mass_rename()
