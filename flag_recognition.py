@@ -31,21 +31,26 @@ Created on Tue Dec 20 15:21:10 2022
 
 import torch
 import os
+import pandas as pd
 
 src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
 
 # now we use the os package to create a list of files in the directory and rename
 # os.listdir() finds the files
 # os.rename() renames them
-country = []
-last_fold = []
+country = ["Russia", "Ukraine", "Soviet"]
+last_folder = ["Russian_Flag", "Ukrainian_Flag", "Soviet_Flag"]
 
-df = merge(country, last_fold)
+# defining a dictionary using these lists
+data = {'country': country,
+        'directory': last_folder}
 
-for i in df:
+df = pd.DataFrame(data, columns=["country", "directory"])
+
+for i in range(len(df)):
     
     # specifying the folder the country flags are located in
-    folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/{last_fold}"
+    folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/" + df.loc[i, "directory"]
     # specifying the name for use in the renaming loop
     country = country
     
