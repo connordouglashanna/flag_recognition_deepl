@@ -49,10 +49,11 @@ df = pd.DataFrame(data, columns=["country", "directory"])
 
 for i in range(len(df)):
     
+    print(df.loc[i, "directory"])
     # specifying the folder the country flags are located in
     folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/" + df.loc[i, "directory"]
     # specifying the name for use in the renaming loop
-    country = country
+    country = df.loc[i, "country"]
     
     # now iterating across each file in the directory
     for count, filename in enumerate(os.listdir(folder)):
