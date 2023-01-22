@@ -35,10 +35,10 @@ import pandas as pd
 
 src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
 
-# now we use the os package to create a list of files in the directory and rename
+## now we use the os package to create a list of files in the directory and rename
 # os.listdir() finds the files
 # os.rename() renames them
-country = ["Russia", "Ukraine", "Soviet"]
+country = ["Russian", "Ukrainian", "Soviet"]
 last_folder = ["Russian_Flag", "Ukrainian_Flag", "Soviet_Flag"]
 
 # defining a dictionary using these lists
@@ -62,4 +62,40 @@ for i in range(len(df)):
         dst = f"{folder}/{dst}"
     
         # renaming based on list
-        os.rename(src, dst)
+        # using a try-else block to close out errors
+        try:
+            os.rename(src, dst)
+        except FileExistsError:
+            print(filename + " already exists and cannot be renamed.") 
+            # now our flag files all have appropriate names without conflicts
+
+## now to read the files 
+# https://towardsdatascience.com/building-efficient-custom-datasets-in-pytorch-2563b946fd9f
+
+data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
+
+class FlagsDataset(Dataset):
+    
+    def __init__(self, data_root):
+        self.samples = []
+        
+        for country in os.listdir(data_root):
+            country_folder = os.path.join(data_root, country)
+            
+            print(country_folder)
+            
+            for obs in os.listdir(country_folder):
+                obs_filepath = os.path.join(country_folder, obs).replace("\\","/")
+                
+                print(obs_filepath)
+                
+                self.samples.append((country, obs, obs_filepath))
+                
+    def __len__(self):
+        return len(self.samples)
+    
+    def __getitem__(self, idx):
+        return self.samples[idx]
+    
+if __name__ == '__main__':
+    dataset = 
