@@ -32,6 +32,7 @@ Created on Tue Dec 20 15:21:10 2022
 import torch
 import os
 import pandas as pd
+from torch.utils.data import Dataset
 
 src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
 
@@ -79,23 +80,38 @@ class FlagsDataset(Dataset):
     def __init__(self, data_root):
         self.samples = []
         
+        # fetching category folders/names
         for country in os.listdir(data_root):
             country_folder = os.path.join(data_root, country)
             
+            # testing
             print(country_folder)
             
-            for obs in os.listdir(country_folder):
-                obs_filepath = os.path.join(country_folder, obs).replace("\\","/")
+            # fetching observation filepaths
+            for flag in os.listdir(country_folder):
+                flag_filepath = os.path.join(country_folder, flag).replace("\\","/")
                 
-                print(obs_filepath)
+                # testing
+                print(flag_filepath)
                 
-                self.samples.append((country, obs, obs_filepath))
-                
+                # iterating 
+                with open(flag_filepath, 'r') as flag_file:
+                    for tensor in # insert tensorizing code here: 
+                        # populating each sample with obs index, filepath, and category
+                        self.samples.append((country, obs, obs_filepath))
+    ## potential other steps:
+        # unifying resolution of images
+        # converting images to tensors
+        # one hot encoding country
+    
     def __len__(self):
         return len(self.samples)
     
     def __getitem__(self, idx):
         return self.samples[idx]
     
+# inspecting the dataset observations
 if __name__ == '__main__':
-    dataset = 
+    dataset = FlagsDataset(data_root)
+    print(len(dataset))
+    print(dataset[100])
