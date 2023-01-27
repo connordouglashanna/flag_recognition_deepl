@@ -33,19 +33,24 @@ import torch
 import os
 import pandas as pd
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms
+from PIL import Image
 
 src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
 
 ## now we use the os package to create a list of files in the directory and rename
 # os.listdir() finds the files
 # os.rename() renames them
+
+# defining lists for dictionary
 country = ["Russian", "Ukrainian", "Soviet"]
 last_folder = ["Russian_Flag", "Ukrainian_Flag", "Soviet_Flag"]
 
-# defining a dictionary using these lists
+# defining a dictionary using lists
 data = {'country': country,
         'directory': last_folder}
 
+# converting dictionary into df
 df = pd.DataFrame(data, columns=["country", "directory"])
 
 for i in range(len(df)):
@@ -73,8 +78,18 @@ for i in range(len(df)):
 ## now to read the files 
 # https://towardsdatascience.com/building-efficient-custom-datasets-in-pytorch-2563b946fd9f
 
+# file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
 
+# composing our tensor transforms in advance of the loop
+## note: good practice is to 
+transformer = transforms.Compose([
+    transforms.CenterCrop(10),
+    transforms.PILToTensor(),
+    transforms.ConvertImageDtype(torch.float),
+    ])
+
+# defining our dataset class
 class FlagsDataset(Dataset):
     
     def __init__(self, data_root):
@@ -88,17 +103,17 @@ class FlagsDataset(Dataset):
             print(country_folder)
             
             # fetching observation filepaths
-            for flag in os.listdir(country_folder):
-                flag_filepath = os.path.join(country_folder, flag).replace("\\","/")
+            for flag_id in os.listdir(country_folder):
+                flag_filepath = os.path.join(country_folder, flag_id).replace("\\","/")
                 
                 # testing
                 print(flag_filepath)
                 
-                # iterating 
-                with open(flag_filepath, 'r') as flag_file:
-                    for tensor in # insert tensorizing code here: 
-                        # populating each sample with obs index, filepath, and category
-                        self.samples.append((country, obs, obs_filepath))
+                # designating the opened image files
+                with Image.open(flag_filepath, 'r') as flag_file:
+                    for  tensor in transformer(flag_file)
+                        # populating each sample with obs index, filepath, tensor, and category
+                        self.samples.append((country, flag_id, flag_filepath, tensor))
     ## potential other steps:
         # unifying resolution of images
         # converting images to tensors
