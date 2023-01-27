@@ -7,27 +7,8 @@ Created on Tue Dec 20 15:21:10 2022
 
 # baby's first independent deepl project
 
-# for image processing I know the following three libraries are related but
-# I'm not sure which does what... 
-
 ## protip from Reid: 
     # pytorch dataset class
-
-# pillow
-# skimage
-# numpy.ndarrays
-
-## steps for each:
-
-# crop to specified aspect ratio
-
-# shrink to appropriate size for nn
-# use pillow resize() method
-
-# normalize images
-
-# dimensionality reduction?
-
 
 import torch
 import os
@@ -130,7 +111,7 @@ class FlagsDataset(Dataset):
     
         # applying our transform function, if specified
         if self.transform:
-            sample = self.transform(sample)
+            samples = self.transform(samples)
         
 # defining file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
@@ -142,8 +123,19 @@ transform_train = transforms.Compose([
     transforms.ConvertImageDtype(torch.float),
     ])
 
+            ## steps for each:
+            
+            # crop to specified aspect ratio
+            
+            # shrink to appropriate size for nn
+            # use pillow resize() method
+            
+            # normalize images
+            
+            # dimensionality reduction?
+
 # inspecting the dataset observations
 if __name__ == '__main__':
-    dataset = FlagsDataset(data_root, transform_train
+    dataset = FlagsDataset(data_root, transform_train)
     print(len(dataset))
     print(dataset[100])
