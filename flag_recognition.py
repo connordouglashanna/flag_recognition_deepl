@@ -76,24 +76,19 @@ for i in range(len(df)):
             # now our flag files all have appropriate names without conflicts
 
 ## now to read the files 
-# https://towardsdatascience.com/building-efficient-custom-datasets-in-pytorch-2563b946fd9f
+## https://towardsdatascience.com/building-efficient-custom-datasets-in-pytorch-2563b946fd9f
 
-# file repo
-data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
-
-# composing our tensor transforms in advance of the loop
-## note: good practice is to 
-transformer = transforms.Compose([
-    transforms.CenterCrop(10),
-    transforms.PILToTensor(),
-    transforms.ConvertImageDtype(torch.float),
-    ])
+## note: good practice is to define transform as a variable so it can be changed for test/train
+## https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 
 # defining our dataset class
 class FlagsDataset(Dataset):
     
-    def __init__(self, data_root):
+    def __init__(self, data_root, transform=None):
+        # defining an empty array to store our data
         self.samples = []
+        # defining our transform function
+        self.transform = transform
         
         # fetching category folders/names
         for country in os.listdir(data_root):
@@ -103,17 +98,25 @@ class FlagsDataset(Dataset):
             print(country_folder)
             
             # fetching observation filepaths
-            for flag_id in os.listdir(country_folder):
-                flag_filepath = os.path.join(country_folder, flag_id).replace("\\","/")
+            for obs_id in os.listdir(country_folder):
+                flag_filepath = os.path.join(country_folder, obs_id).replace("\\","/")
                 
                 # testing
                 print(flag_filepath)
                 
-                # designating the opened image files
-                with Image.open(flag_filepath, 'r') as flag_file:
-                    for  tensor in transformer(flag_file)
-                        # populating each sample with obs index, filepath, tensor, and category
-                        self.samples.append((country, flag_id, flag_filepath, tensor))
+                # opening the images using PIL
+                flag_img = Image.open(flag_filepath, 'r')
+                
+                # code removed for now but left for later
+                ### designating the opened image files
+                ###with Image.open(flag_filepath, 'r') as flag_file:
+                ###    for  ___ in flag_file,
+                
+                # populating each sample with obs index, filepath, tensor, and category
+                self.samples.append((country, obs_id, flag_filepath, flag_img))
+                
+                
+                
     ## potential other steps:
         # unifying resolution of images
         # converting images to tensors
@@ -125,8 +128,22 @@ class FlagsDataset(Dataset):
     def __getitem__(self, idx):
         return self.samples[idx]
     
+        # applying our transform function, if specified
+        if self.transform:
+            sample = self.transform(sample)
+        
+# defining file repo
+data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
+
+# defining transform
+transform_train = transforms.Compose([
+    transforms.CenterCrop(10),
+    transforms.PILToTensor(),
+    transforms.ConvertImageDtype(torch.float),
+    ])
+
 # inspecting the dataset observations
 if __name__ == '__main__':
-    dataset = FlagsDataset(data_root)
+    dataset = FlagsDataset(data_root, transform_train
     print(len(dataset))
     print(dataset[100])
