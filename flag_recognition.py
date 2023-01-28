@@ -54,6 +54,8 @@ for i in range(len(df)):
             os.rename(src, dst)
         except FileExistsError:
             print(filename + " already exists and cannot be renamed.") 
+        except PermissionError:
+            print(filename + " is currently open in the Dataset object and cannot be renamed.")
             # now our flag files all have appropriate names without conflicts
 
 ## now to read the files 
@@ -88,54 +90,44 @@ class FlagsDataset(Dataset):
                 # opening the images using PIL
                 flag_img = Image.open(flag_filepath, 'r')
                 
-                # code removed for now but left for later
-                ### designating the opened image files
-                ###with Image.open(flag_filepath, 'r') as flag_file:
-                ###    for  ___ in flag_file,
-                
                 # populating each sample with obs index, filepath, tensor, and category
-                self.samples.append((country, obs_id, flag_filepath, flag_img))
-                
-                
-                
-    ## potential other steps:
-        # unifying resolution of images
-        # converting images to tensors
-        # one hot encoding country
-    
+                self.samples.append([country, obs_id, flag_filepath, flag_img])
+
     def __len__(self):
         return len(self.samples)
     
     def __getitem__(self, idx):
-        return self.samples[idx]
-    
         # applying our transform function, if specified
         if self.transform:
-            samples = self.transform(samples)
+            # iterating over the list of samples
+            for i in self.samples:
+                # applying the transform to the tensor element in the obs-level sublist
+                i[3] = self.transform(i[3])
+                
+        # fetching the transformed samples
+        return self.samples[idx]
+    
         
 # defining file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
 
-# defining transform
-transform_train = transforms.Compose([
-    transforms.CenterCrop(10),
-    transforms.PILToTensor(),
-    transforms.ConvertImageDtype(torch.float),
+# defining test transform
+transform_test = transforms.Compose([
+    transforms.PILToTensor()
     ])
 
-            ## steps for each:
-            
             # crop to specified aspect ratio
             
             # shrink to appropriate size for nn
-            # use pillow resize() method
+            # use pillow resize() method?
             
             # normalize images
             
             # dimensionality reduction?
 
-# inspecting the dataset observations
+# defining main function
 if __name__ == '__main__':
-    dataset = FlagsDataset(data_root, transform_train)
+    dataset = FlagsDataset(data_root, transform_test)
     print(len(dataset))
     print(dataset[100])
+    
