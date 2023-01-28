@@ -14,8 +14,11 @@ import torch
 import os
 import pandas as pd
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
+
+#%% File Organization
 
 src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
 
@@ -57,6 +60,8 @@ for i in range(len(df)):
         except PermissionError:
             print(filename + " is currently open in the Dataset object and cannot be renamed.")
             # now our flag files all have appropriate names without conflicts
+
+#%% Dataset class definition
 
 ## now to read the files 
 ## https://towardsdatascience.com/building-efficient-custom-datasets-in-pytorch-2563b946fd9f
@@ -107,7 +112,9 @@ class FlagsDataset(Dataset):
         # fetching the transformed samples
         return self.samples[idx]
     
-        
+    ### This will likely require extensive modification to support one-hot encoding
+    
+    
 # defining file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
 
@@ -116,18 +123,33 @@ transform_test = transforms.Compose([
     transforms.PILToTensor()
     ])
 
-            # crop to specified aspect ratio
-            
-            # shrink to appropriate size for nn
-            # use pillow resize() method?
-            
-            # normalize images
-            
-            # dimensionality reduction?
-
-# defining main function
+# testing a few properties using a main function call
 if __name__ == '__main__':
     dataset = FlagsDataset(data_root, transform_test)
-    print(len(dataset))
-    print(dataset[100])
+    # print statement to check observations
+    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
+    # inspecting an individual observation
+    print(dataset[100:105])
+    
+
+#%% Test/train data definitions
+
+# building transforms for our dataset:
+    
+            # crop to specified aspect ratio
+            # shrink to appropriate size for nn
+            # use pillow resize() method?
+            # normalize images
+            # dimensionality reduction?
+            
+    # train transform definition
+
+    # test transform definition
+
+# defining our test/train datasets
+
+            # how to incorporate test/train split?
+
+#%% Dataloading using dataloaders
+
     
