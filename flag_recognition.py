@@ -142,9 +142,16 @@ if __name__ == '__main__':
             # normalize images
             # dimensionality reduction?
             
-    # train transform definition
+# train transform definition
+transform_train = transforms.Compose([
+    transforms.PILToTensor(),
+    transforms.FiveCrop(),
+    ])
 
-    # test transform definition
+# test transform definition
+transform_test = transforms.Compose([
+    transforms.PILToTensor(),
+    ])
 
 # defining our test/train datasets
 
