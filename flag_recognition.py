@@ -88,6 +88,7 @@ class FlagsDataset(Dataset):
     def __len__(self):
         return len(self.samples)
     
+    ### getitem function needs to run the one-hot encoder
     def __getitem__(self, idx):
         # applying our transform function, if specified
         if self.transform:
@@ -95,11 +96,11 @@ class FlagsDataset(Dataset):
             for i in self.samples:
                 # applying the transform to the tensor element in the obs-level sublist
                 i[3] = self.transform(i[3])
-                
+        
         # fetching the transformed samples
-        return self.samples[idx]
+        return self.one_hot_sample(country)
     
-    ### Extensive modifications to follow
+    # removing the filepath business to a separate function definition
     def _init_dataset(self):
         countries = set()
         
@@ -119,7 +120,10 @@ class FlagsDataset(Dataset):
                 
                 # populating each sample with obs index, filepath, tensor, and category
                 self.samples.append([country, obs_id, flag_filepath, flag_img])
-                
+        
+        # adding the countries to the codex
+        self.country_codec.fit(list(countries))
+        
     # building a one-hot encoder
     def to_one_hot(self, codec, values):
         value_idxs = codec.transform(values)
