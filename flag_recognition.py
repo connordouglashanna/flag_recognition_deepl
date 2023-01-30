@@ -75,10 +75,7 @@ class FlagsDataset(Dataset):
     
     def __init__(self, data_root=None, transform=None):
         # defining our root directory attribute
-        if data_root is None:
-            data_root = {}
-        else:
-            self.data_root = data_root
+        self.data_root = data_root
         # defining an empty array to store our data
         self.samples = []
         # defining our encoder codex for country
@@ -163,15 +160,15 @@ if __name__ == '__main__':
             # dimensionality reduction?
             
 # train transform definition
-transform_train = transforms.Compose([
-    transforms.PILToTensor(),
-    transforms.FiveCrop(),
-    ])
+#transform_train = transforms.Compose([
+#    transforms.PILToTensor(),
+ #   transforms.FiveCrop(),
+ #   ])
 
 # test transform definition
-transform_test = transforms.Compose([
-    transforms.PILToTensor(),
-    ])
+#transform_test = transforms.Compose([
+ #   transforms.PILToTensor(),
+  #  ])
 
 # defining our test/train datasets
 
