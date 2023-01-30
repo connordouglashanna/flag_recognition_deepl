@@ -17,6 +17,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
+from sklearn.preprocessing import LabelEncoder
 
 #%% File Organization
 
@@ -72,31 +73,20 @@ for i in range(len(df)):
 # defining our dataset class
 class FlagsDataset(Dataset):
     
-    def __init__(self, data_root, transform=None):
+    def __init__(self, data_root=None, transform=None):
+        # defining our root directory attribute
+        if data_root is None:
+            data_root = {}
+        else:
+            self.data_root = data_root
         # defining an empty array to store our data
         self.samples = []
+        # defining our encoder codex for country
+        self.country_codec = LabelEncoder()
         # defining our transform function
         self.transform = transform
-        
-        # fetching category folders/names
-        for country in os.listdir(data_root):
-            country_folder = os.path.join(data_root, country)
-            
-            # testing
-            print(country_folder)
-            
-            # fetching observation filepaths
-            for obs_id in os.listdir(country_folder):
-                flag_filepath = os.path.join(country_folder, obs_id).replace("\\","/")
-                
-                # testing
-                print(flag_filepath)
-                
-                # opening the images using PIL
-                flag_img = Image.open(flag_filepath, 'r')
-                
-                # populating each sample with obs index, filepath, tensor, and category
-                self.samples.append([country, obs_id, flag_filepath, flag_img])
+        # running our _init_dataset() function
+        self._init_dataset()
 
     def __len__(self):
         return len(self.samples)
@@ -112,8 +102,38 @@ class FlagsDataset(Dataset):
         # fetching the transformed samples
         return self.samples[idx]
     
-    ### This will likely require extensive modification to support one-hot encoding
+    ### Extensive modifications to follow
+    def _init_dataset(self):
+        countries = set()
+        
+        # fetching category folders/names
+        for country in os.listdir(self.data_root):
+            country_folder = os.path.join(self.data_root, country)
+            
+            # adding country categories
+            countries.add(country)
+            
+            # fetching observation filepaths
+            for obs_id in os.listdir(country_folder):
+                flag_filepath = os.path.join(country_folder, obs_id).replace("\\","/")
+                
+                # opening the images using PIL
+                flag_img = Image.open(flag_filepath, 'r')
+                
+                # populating each sample with obs index, filepath, tensor, and category
+                self.samples.append([country, obs_id, flag_filepath, flag_img])
+                
+    # building a one-hot encoder
+    def to_one_hot(self, codec, values):
+        value_idxs = codec.transform(values)
+        return torch.eye(len(codec.classes_))[value_idxs]
     
+    # running the one-hot encoder on data
+    def one_hot_sample(self, country):
+        t_country = self.to_one_hot(self.country_codec, [country])
+        return t_country
+        
+        
     
 # defining file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
