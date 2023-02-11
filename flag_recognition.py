@@ -61,6 +61,42 @@ for i in range(len(df)):
         except PermissionError:
             print(filename + " is currently open in the Dataset object and cannot be renamed.")
             # now our flag files all have appropriate names without conflicts
+            
+#%% Annotation .csv generation
+
+# note that this function comes from the csv module which i will need to install 
+def build_csv(directory_string, output_csv_name):
+    """Builds a csv file for pytorch training from a directory of folders of images.
+    Install csv module if not already installed.
+    Args: 
+    directory_string: string of directory path, e.g. r'.\data\train'
+    output_csv_name: string of output csv file name, e.g. 'train.csv'
+    Returns:
+    csv file with file names, file paths, class names and class indices
+    """
+    directory = directory_string
+    class_lst = os.listdir(directory)
+    class_lst.sort() # tutorial says this is important. Why unknown
+    with open(output_csv_name, 'w', newline = '') as csvfile:
+        writer = csv.writer(csvfile, delimiter = ',')
+        # now we add in the information previously contained in the directory crawler from the __init__ def
+        writer.writerow([obs_id, file_path, class_name, class_idx])
+        for class_name in class_lst:
+            # concats the country name to the og filepath to give the directory with the country folder open
+            class_path = os.path.join(directory, class_name) 
+            file_list = os.listdir(class_path) # GIVE ME ALL YOUR FILEPATHS
+            for file_name in file_list:
+                # glueing together pieces to give us the full directory of the file
+                file_path = os.path.join(directory, class_name, file_name) 
+                # adding this information to the csv file
+                writer_writerow([file_name, file_path, class_name, class_lst.index(class_name)]) 
+    return
+
+# original author included separate statements for building train and test datasets. 
+# how can I make this work with the dataloaders so that I don't wind up predefining a narrow sample?
+build_csv(train_folder, 'train.csv')
+train_df = pd.read_csv('train.csv')
+            
 
 #%% Dataset class definition
 
@@ -89,6 +125,7 @@ class FlagsDataset(Dataset):
         return len(self.samples)
     
     ### getitem function needs to run the one-hot encoder
+    ### consider using pytorch documentation as model
     def __getitem__(self, idx):
         # applying our transform function, if specified
         if self.transform:
