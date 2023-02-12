@@ -112,30 +112,34 @@ flags_df = pd.read_csv('flags.csv')
 # defining our dataset class
 class FlagsDataset(Dataset):
     
-    def __init__(self, data_root=None, transform=None):
+    def __init__(self, csv_file, data_root=None, transform=None):
         # defining our root directory attribute
         self.data_root = data_root
         # defining an empty array to store our data
         self.samples = []
+        # annotation dataframe
+        self.annotation_df = pd.read_csv(csv_file)
         # defining our transform function
         self.transform = transform
 
     def __len__(self):
         return len(self.samples)
     
-    ### getitem function needs to run the one-hot encoder
-    ### consider using pytorch documentation as model
+
     def __getitem__(self, idx):
-        # applying our transform function, if specified
+        # fetching our filepath from the annotation .csv
+        image_path = os.path.join(self.root_dir, self.annotation_df.iloc[idx, 1])
+        # reading the images using PIL
+        image = Image.open(image_path, 'r')
+        # defining the class name for that image from the annotations
+        class_name = self.annotation_df.iloc[idx, 2]
+        # defining the class index for that image from the annotations
+        class_index = self.annoataion_df.iloc[idx, 3]
+        ## performing our transformations:
         if self.transform:
-            # iterating over the list of samples
-            for i in self.samples:
-                # applying the transform to the tensor element in the obs-level sublist
-                i[3] = self.transform(i[3])
+            image = self.transform(image)
+        return image, class_name, class_index
         
-        # fetching the transformed samples
-        return self.one_hot_sample(country)
-    
     # removing the filepath business to a separate function definition
     def _init_dataset(self):
         countries = set()
