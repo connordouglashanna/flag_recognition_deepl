@@ -117,12 +117,8 @@ class FlagsDataset(Dataset):
         self.data_root = data_root
         # defining an empty array to store our data
         self.samples = []
-        # defining our encoder codex for country
-        self.country_codec = LabelEncoder()
         # defining our transform function
         self.transform = transform
-        # running our _init_dataset() function
-        self._init_dataset()
 
     def __len__(self):
         return len(self.samples)
@@ -160,21 +156,7 @@ class FlagsDataset(Dataset):
                 
                 # populating each sample with obs index, filepath, tensor, and category
                 self.samples.append([country, obs_id, flag_filepath, flag_img])
-        
-        # adding the countries to the codex
-        self.country_codec.fit(list(countries))
-        
-    # building a one-hot encoder
-    def to_one_hot(self, codec, values):
-        value_idxs = codec.transform(values)
-        return torch.eye(len(codec.classes_))[value_idxs]
-    
-    # running the one-hot encoder on data
-    def one_hot_sample(self, country):
-        t_country = self.to_one_hot(self.country_codec, [country])
-        return t_country
-        
-        
+
     
 # defining file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
