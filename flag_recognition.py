@@ -67,7 +67,6 @@ for i in range(len(df)):
 # note that this function comes from the csv module which i will need to install 
 def build_csv(directory_string, output_csv_name):
     """Builds a csv file for pytorch training from a directory of folders of images.
-    Install csv module if not already installed.
     Args: 
     directory_string: string of directory path, e.g. r'.\data\train'
     output_csv_name: string of output csv file name, e.g. 'train.csv'
@@ -115,20 +114,17 @@ class FlagsDataset(Dataset):
     def __init__(self, csv_file, data_root=None, transform=None):
         # defining our root directory attribute
         self.data_root = data_root
-        # defining an empty array to store our data
-        self.samples = []
         # annotation dataframe
         self.annotation_df = pd.read_csv(csv_file)
         # defining our transform function
         self.transform = transform
 
     def __len__(self):
-        return len(self.samples)
-    
+        return len(self.annotation_df)
 
     def __getitem__(self, idx):
         # fetching our filepath from the annotation .csv
-        image_path = os.path.join(self.root_dir, self.annotation_df.iloc[idx, 1])
+        image_path = os.path.join(self.data_root, self.annotation_df.iloc[idx, 1])
         # reading the images using PIL
         image = Image.open(image_path, 'r')
         # defining the class name for that image from the annotations
@@ -138,48 +134,30 @@ class FlagsDataset(Dataset):
         ## performing our transformations:
         if self.transform:
             image = self.transform(image)
+        # returning our sample
         return image, class_name, class_index
-        
-    # removing the filepath business to a separate function definition
-    def _init_dataset(self):
-        countries = set()
-        
-        # fetching category folders/names
-        for country in os.listdir(self.data_root):
-            country_folder = os.path.join(self.data_root, country)
-            
-            # adding country categories
-            countries.add(country)
-            
-            # fetching observation filepaths
-            for obs_id in os.listdir(country_folder):
-                flag_filepath = os.path.join(country_folder, obs_id).replace("\\","/")
-                
-                # opening the images using PIL
-                flag_img = Image.open(flag_filepath, 'r')
-                
-                # populating each sample with obs index, filepath, tensor, and category
-                self.samples.append([country, obs_id, flag_filepath, flag_img])
 
-    
 # defining file repo
 data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
 
+# defining csv location 
+csv_file = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/flags.csv"
+
 # defining test transform
-transform_test = transforms.Compose([
+transform_pilot = transforms.Compose([
     transforms.PILToTensor()
     ])
 
 # testing a few properties using a main function call
 if __name__ == '__main__':
-    dataset = FlagsDataset(data_root, transform_test)
+    dataset = FlagsDataset(csv_file, data_root,  transform_pilot)
     # print statement to check observations
     print("This dataset contains a total of " + str(len(dataset)) + " observations.")
     # inspecting an individual observation
     print(dataset[100:105])
     
 
-#%% Test/train data definitions
+#%% Test/train split definitions
 
 # building transforms for our dataset:
     
