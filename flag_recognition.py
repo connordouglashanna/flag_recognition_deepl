@@ -9,7 +9,7 @@ Created on Tue Dec 20 15:21:10 2022
 
 ## protip from Reid: 
     # pytorch dataset class
-
+import csv
 import torch
 import os
 import pandas as pd
@@ -76,11 +76,11 @@ def build_csv(directory_string, output_csv_name):
     """
     directory = directory_string
     class_lst = os.listdir(directory)
-    class_lst.sort() # tutorial says this is important. Why unknown
+    class_lst.sort() # important to avoid the random order assigned by os.listdir() giving variable index values
     with open(output_csv_name, 'w', newline = '') as csvfile:
         writer = csv.writer(csvfile, delimiter = ',')
         # now we add in the information previously contained in the directory crawler from the __init__ def
-        writer.writerow([obs_id, file_path, class_name, class_idx])
+        writer.writerow(['obs_id', 'file_path', 'class_name', 'class_idx'])
         for class_name in class_lst:
             # concats the country name to the og filepath to give the directory with the country folder open
             class_path = os.path.join(directory, class_name) 
@@ -89,13 +89,16 @@ def build_csv(directory_string, output_csv_name):
                 # glueing together pieces to give us the full directory of the file
                 file_path = os.path.join(directory, class_name, file_name) 
                 # adding this information to the csv file
-                writer_writerow([file_name, file_path, class_name, class_lst.index(class_name)]) 
+                writer.writerow([file_name, file_path, class_name, class_lst.index(class_name)]) 
     return
+
+# now defining the data root,
+data_folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
 
 # original author included separate statements for building train and test datasets. 
 # how can I make this work with the dataloaders so that I don't wind up predefining a narrow sample?
-build_csv(train_folder, 'train.csv')
-train_df = pd.read_csv('train.csv')
+build_csv(data_folder, 'flags.csv')
+flags_df = pd.read_csv('flags.csv')
             
 
 #%% Dataset class definition
