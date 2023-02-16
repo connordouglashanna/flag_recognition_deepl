@@ -93,7 +93,7 @@ def build_csv(directory_string, output_csv_name):
     return
 
 # now defining the data root,
-data_folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
+data_folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags"
 
 # original author included separate statements for building train and test datasets. 
 # how can I make this work with the dataloaders so that I don't wind up predefining a narrow sample?
@@ -139,7 +139,7 @@ class FlagsDataset(Dataset):
         return image, class_name, class_index
 
 # defining file repo
-data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/"
+data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags"
 
 # defining csv location 
 csv_file = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/flags.csv"
