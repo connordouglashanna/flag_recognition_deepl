@@ -18,6 +18,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
 
 #%% File Organization
 
@@ -148,14 +149,33 @@ transform_pilot = transforms.Compose([
     transforms.PILToTensor()
     ])
 
+### this function needs revision
 # testing a few properties using a main function call
-if __name__ == '__main__':
-    dataset = FlagsDataset(csv_file, data_root,  transform_pilot)
+#if __name__ == '__main__':
+#    dataset = FlagsDataset(csv_file, data_root,  transform_pilot)
     # print statement to check observations
-    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
+#    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
     # inspecting an individual observation
-    print(dataset[100:105])
+#    print(dataset[100:105])
     
+#%% Visualization test
+
+# generating an untransformed dataset
+naked_flags = FlagsDataset(csv_file = csv_file)
+
+# generating our visualizations
+# setting our figure size...
+plt.figure(figsize = (12, 6))
+# looping to get some images
+for i in range(10):
+    ### this must be the line that's broken...
+    idx = torch.randint(len(naked_flags), size = (1,))
+    image, class_name, class_index = naked_flags[idx]
+    ax = plt.subplot(2, 5, i + 1) 
+    ax.title.set_text(class_name + "_" + str(class_index))
+    plt.imshow(image)
+
+
 
 #%% Test/train split definitions
 
