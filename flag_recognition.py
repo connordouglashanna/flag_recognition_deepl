@@ -26,8 +26,8 @@ import matplotlib.pyplot as plt
 # defining data folder for use throughout
 data_folder = "C:\\Users\condo\OneDrive\Documents\Engineers_for_Ukraine\\flag_recognition_deepl\\Flags"
 
-# defining a source directory for this operation
-src = data_folder
+# defining an empty source directory for this operation
+src = ""
 
 # defining lists for dictionary
 country = ["Russian", "Ukrainian", "Soviet"]
@@ -44,7 +44,7 @@ for i in range(len(df)):
     
     print(df.loc[i, "directory"])
     # specifying the folder the country flags are located in
-    folder = os.path.join(src, df.loc[i, "directory"])
+    folder = os.path.join(data_folder, df.loc[i, "directory"])
     # specifying the name for use in the renaming loop
     country = df.loc[i, "country"]
     
@@ -141,7 +141,7 @@ class FlagsDataset(Dataset):
 
 
 # defining csv location 
-csv_file = "C:\\Users\condo\OneDrive\Documents\Engineers_for_Ukraine\flag_recognition_deepl\flags.csv"
+csv_file = "C:\\Users\condo\OneDrive\Documents\Engineers_for_Ukraine\\flag_recognition_deepl\\flags.csv"
 
 ## note: data_folder object is reused again below
 
