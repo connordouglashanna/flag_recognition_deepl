@@ -20,13 +20,14 @@ from PIL import Image
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 
-#%% File Organization
+#%% Mass renaming
 
-src = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl"
+# using the os package to create a list of files in the directory and rename
+# defining data folder for use throughout
+data_folder = "C:\\Users\condo\OneDrive\Documents\Engineers_for_Ukraine\\flag_recognition_deepl\\Flags"
 
-## now we use the os package to create a list of files in the directory and rename
-# os.listdir() finds the files
-# os.rename() renames them
+# defining a source directory for this operation
+src = data_folder
 
 # defining lists for dictionary
 country = ["Russian", "Ukrainian", "Soviet"]
@@ -43,15 +44,15 @@ for i in range(len(df)):
     
     print(df.loc[i, "directory"])
     # specifying the folder the country flags are located in
-    folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags/" + df.loc[i, "directory"]
+    folder = os.path.join(src, df.loc[i, "directory"])
     # specifying the name for use in the renaming loop
     country = df.loc[i, "country"]
     
     # now iterating across each file in the directory
     for count, filename in enumerate(os.listdir(folder)):
         dst = f"{country}_{str(count)}.jpg"
-        src = f"{folder}/{filename}"
-        dst = f"{folder}/{dst}"
+        src = f"{folder}\\{filename}"
+        dst = f"{folder}\\{dst}"
     
         # renaming based on list
         # using a try-else block to close out errors
@@ -92,11 +93,11 @@ def build_csv(directory_string, output_csv_name):
                 writer.writerow([file_name, file_path, class_name, class_lst.index(class_name)]) 
     return
 
-# now defining the data root,
-data_folder = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags"
 
 # original author included separate statements for building train and test datasets. 
 # how can I make this work with the dataloaders so that I don't wind up predefining a narrow sample?
+
+# note: data_folder object from earlier is reused here
 build_csv(data_folder, 'flags.csv')
 flags_df = pd.read_csv('flags.csv')
             
@@ -138,11 +139,11 @@ class FlagsDataset(Dataset):
         # returning our sample
         return image, class_name, class_index
 
-# defining file repo
-data_root = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/Flags"
 
 # defining csv location 
-csv_file = "C:/Users/condo/OneDrive/Documents/Engineers_for_Ukraine/flag_recognition_deepl/flags.csv"
+csv_file = "C:\\Users\condo\OneDrive\Documents\Engineers_for_Ukraine\flag_recognition_deepl\flags.csv"
+
+## note: data_folder object is reused again below
 
 # defining test transform
 transform_pilot = transforms.Compose([
