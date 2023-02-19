@@ -149,14 +149,16 @@ transform_pilot = transforms.Compose([
     transforms.PILToTensor()
     ])
 
-### this function needs revision??
 # testing a few properties using a main function call
-#if __name__ == '__main__':
-#    dataset = FlagsDataset(csv_file, data_folder,  transform_pilot)
+if __name__ == '__main__':
+    dataset = FlagsDataset(csv_file = csv_file, data_root = data_folder, transform = transform_pilot)
     # print statement to check observations
-#    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
-    # inspecting an individual observation
-#    print(dataset[100:105])
+    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
+    # inspecting 10 individual tensorized observations at random
+    for i in range(10):
+        idx = torch.randint(len(dataset), (1,))
+        idx = idx.item()
+        print(dataset[idx])
     
 #%% Visualization test
 
