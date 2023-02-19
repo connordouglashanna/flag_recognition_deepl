@@ -5,8 +5,6 @@ Created on Tue Dec 20 15:21:10 2022
 @author: condo
 """
 
-# baby's first independent deepl project
-
 ## protip from Reid: 
     # pytorch dataset class
 import csv
@@ -151,7 +149,7 @@ transform_pilot = transforms.Compose([
     transforms.PILToTensor()
     ])
 
-### this function needs revision
+### this function needs revision??
 # testing a few properties using a main function call
 #if __name__ == '__main__':
 #    dataset = FlagsDataset(csv_file, data_folder,  transform_pilot)
@@ -170,8 +168,8 @@ naked_flags = FlagsDataset(csv_file = csv_file, data_root = data_folder)
 plt.figure(figsize = (12, 6))
 # looping to get some images
 for i in range(10):
-    ### this must be the line that's broken...
-    idx = torch.randint(len(naked_flags), size = (1,))
+    idx = torch.randint(len(naked_flags), (1,))
+    idx = idx.item()
     image, class_name, class_index = naked_flags[idx]
     ax = plt.subplot(2, 5, i + 1) 
     ax.title.set_text(class_name + "_" + str(class_index))
