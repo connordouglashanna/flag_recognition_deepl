@@ -122,6 +122,7 @@ class FlagsDataset(Dataset):
         self.annotation_df = pd.read_csv(csv_file)
         # defining our transform function
         self.transform = transform
+        ### note that size argument is required here
 
     def __len__(self):
         return len(self.annotation_df)
@@ -186,23 +187,30 @@ for i in range(10):
 #%% Test/train split definitions & transforms
 
 ### building transforms for our dataset: needs update
-    
-            # crop to specified aspect ratio
-            # shrink to appropriate size for nn
-            # use pillow resize() method?
-            # normalize images
-            # dimensionality reduction?
+### note that updates should come after model is built to aid in tuning
+            # desired transforms include: 
+                #transforms.RandomHorizontalFlip()
+                #transforms.normalize()
+                # set size to 100x100
+                #transforms.FiveCrop()
+                #transforms.Resize()
             
 # train transform definition
 transform_train = transforms.Compose([
     transforms.PILToTensor(),
-    ### requires a size argument in __init__ 
-    transforms.FiveCrop(),
+    transforms.Resize(200),
+    transforms.RandomCrop(150),
+    transforms.RandomHorizontalFlip(),
+    transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
     ])
 
 # test transform definition
 transform_test = transforms.Compose([
     transforms.PILToTensor(),
+    transforms.Resize(200),
+    transforms.RandomCrop(150),
+    transforms.RandomHorizontalFlip(),
+    transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
     ])
 
 # defining our test/train datasets
@@ -232,3 +240,6 @@ dataloader_test = torch.utils.data.DataLoader(flags_test,
     
 ### do I even need to use dataloaders at all?
 ### note: dataloaders seem to be critical in batching/setting batch size for data. That appears to be the whole purpose.
+
+#%% Model definition 
+
