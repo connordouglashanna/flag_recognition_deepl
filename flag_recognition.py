@@ -151,37 +151,40 @@ transform_pilot = transforms.Compose([
 
 # testing a few properties using a main function call
 if __name__ == '__main__':
-    dataset = FlagsDataset(csv_file = csv_file, data_root = data_folder, transform = transform_pilot)
+    flags_pilot = FlagsDataset(csv_file = csv_file, 
+                           data_root = data_folder, 
+                           transform = transform_pilot)
     # print statement to check observations
-    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
-    # inspecting 10 individual tensorized observations at random
-    for i in range(10):
-        idx = torch.randint(len(dataset), (1,))
+    print("This dataset contains a total of " + str(len(flags_pilot)) + " observations.")
+    # inspecting five individual tensorized observations at random
+    for i in range(5):
+        idx = torch.randint(len(flags_pilot), (1,))
         idx = idx.item()
-        print(dataset[idx])
+        print(flags_pilot[idx])
     
 #%% Visualization test
 
-# generating an untransformed dataset
-naked_flags = FlagsDataset(csv_file = csv_file, data_root = data_folder)
+# generating an untransformed dataset to preserve our image characteristics
+flags_naked = FlagsDataset(csv_file = csv_file, 
+                           data_root = data_folder)
 
 # generating our visualizations
 # setting our figure size...
 plt.figure(figsize = (12, 6))
 # looping to get some images
 for i in range(10):
-    idx = torch.randint(len(naked_flags), (1,))
+    idx = torch.randint(len(flags_naked), (1,))
     idx = idx.item()
-    image, class_name, class_index = naked_flags[idx]
+    image, class_name, class_index = flags_naked[idx]
     ax = plt.subplot(2, 5, i + 1) 
     ax.title.set_text(class_name + "_" + str(class_index))
     plt.imshow(image)
 
+### note: decision needed on what transforms to use and how to get images to the same size. How do?
 
+#%% Test/train split definitions & transforms
 
-#%% Test/train split definitions
-
-# building transforms for our dataset:
+### building transforms for our dataset: needs update
     
             # crop to specified aspect ratio
             # shrink to appropriate size for nn
@@ -190,20 +193,37 @@ for i in range(10):
             # dimensionality reduction?
             
 # train transform definition
-#transform_train = transforms.Compose([
-#    transforms.PILToTensor(),
- #   transforms.FiveCrop(),
- #   ])
+transform_train = transforms.Compose([
+    transforms.PILToTensor(),
+    transforms.FiveCrop(),
+    ])
 
 # test transform definition
-#transform_test = transforms.Compose([
- #   transforms.PILToTensor(),
-  #  ])
+transform_test = transforms.Compose([
+    transforms.PILToTensor(),
+    ])
 
 # defining our test/train datasets
-
-            # how to incorporate test/train split?
+# train dataset
+flags_train = FlagsDataset(csv_file = csv_file, 
+                           data_root = data_folder, 
+                           transform = transform_train)
+# test dataset
+flags_test = FlagsDataset(csv_file = csv_file, 
+                          data_root = data_folder, 
+                          transform = transform_test)
 
 #%% Dataloading using dataloaders
 
+### template code needs updates for use
+loaders = {
+    'train' : torch.utils.data.DataLoader(flags_train,
+                                          batch_size = 100,
+                                          shuffle = True,
+                                          num_workers = 0),
     
+    'test' : torch.utils.data.DataLoader(flags_test, 
+                                         batch_size = 100,
+                                         shuffle = True,
+                                         num_workers = 0),
+    }
