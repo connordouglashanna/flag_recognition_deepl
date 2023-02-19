@@ -64,6 +64,9 @@ for i in range(len(df)):
             
 #%% Annotation .csv generation
 
+# note for future reference that this entire thing could have been done with the native ImageFolder function
+# https://blog.paperspace.com/dataloaders-abstractions-pytorch/
+
 # note that this function comes from the csv module which i will need to install 
 def build_csv(directory_string, output_csv_name):
     """Builds a csv file for pytorch training from a directory of folders of images.
@@ -180,8 +183,6 @@ for i in range(10):
     ax.title.set_text(class_name + "_" + str(class_index))
     plt.imshow(image)
 
-### note: decision needed on what transforms to use and how to get images to the same size. How do?
-
 #%% Test/train split definitions & transforms
 
 ### building transforms for our dataset: needs update
@@ -195,6 +196,7 @@ for i in range(10):
 # train transform definition
 transform_train = transforms.Compose([
     transforms.PILToTensor(),
+    ### requires a size argument in __init__ 
     transforms.FiveCrop(),
     ])
 
@@ -213,17 +215,20 @@ flags_test = FlagsDataset(csv_file = csv_file,
                           data_root = data_folder, 
                           transform = transform_test)
 
-#%% Dataloading using dataloaders
+#%% Defining our dataloaders
 
-### template code needs updates for use
-loaders = {
-    'train' : torch.utils.data.DataLoader(flags_train,
-                                          batch_size = 100,
-                                          shuffle = True,
-                                          num_workers = 0),
+# training dataloader
+dataloader_train = torch.utils.data.DataLoader(flags_train,
+                                               ### how do I select batch size?
+                                               batch_size = 50,
+                                               shuffle = True,
+                                               num_workers = 0),
+
+# testing dataloader
+dataloader_test = torch.utils.data.DataLoader(flags_test, 
+                                              batch_size = 50,
+                                              shuffle = True,
+                                              num_workers = 0),
     
-    'test' : torch.utils.data.DataLoader(flags_test, 
-                                         batch_size = 100,
-                                         shuffle = True,
-                                         num_workers = 0),
-    }
+### do I even need to use dataloaders at all?
+### note: dataloaders seem to be critical in batching/setting batch size for data. That appears to be the whole purpose.
