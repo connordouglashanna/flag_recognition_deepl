@@ -98,6 +98,7 @@ def build_csv(directory_string, output_csv_name):
 # how can I make this work with the dataloaders so that I don't wind up predefining a narrow sample?
 
 # note: data_folder object from earlier is reused here
+### is this a problem? why is the flag file in the repo folder even though the data folder is specified?
 build_csv(data_folder, 'flags.csv')
 flags_df = pd.read_csv('flags.csv')
             
@@ -126,13 +127,13 @@ class FlagsDataset(Dataset):
 
     def __getitem__(self, idx):
         # fetching our filepath from the annotation .csv
-        image_path = os.path.join(self.data_root, self.annotation_df.iloc[idx, 1])
+        image_path = self.annotation_df.iloc[idx, 1]
         # reading the images using PIL
         image = Image.open(image_path, 'r')
         # defining the class name for that image from the annotations
         class_name = self.annotation_df.iloc[idx, 2]
         # defining the class index for that image from the annotations
-        class_index = self.annoataion_df.iloc[idx, 3]
+        class_index = self.annotation_df.iloc[idx, 3]
         ## performing our transformations:
         if self.transform:
             image = self.transform(image)
@@ -153,7 +154,7 @@ transform_pilot = transforms.Compose([
 ### this function needs revision
 # testing a few properties using a main function call
 #if __name__ == '__main__':
-#    dataset = FlagsDataset(csv_file, data_root,  transform_pilot)
+#    dataset = FlagsDataset(csv_file, data_folder,  transform_pilot)
     # print statement to check observations
 #    print("This dataset contains a total of " + str(len(dataset)) + " observations.")
     # inspecting an individual observation
@@ -162,7 +163,7 @@ transform_pilot = transforms.Compose([
 #%% Visualization test
 
 # generating an untransformed dataset
-naked_flags = FlagsDataset(csv_file = csv_file)
+naked_flags = FlagsDataset(csv_file = csv_file, data_root = data_folder)
 
 # generating our visualizations
 # setting our figure size...
