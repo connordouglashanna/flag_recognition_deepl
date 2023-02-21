@@ -18,6 +18,7 @@ from PIL import Image
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 import torch.nn as nn
+from torch.autograd import Variable
 
 #%% Mass renaming
 
@@ -202,10 +203,12 @@ transform_train = transforms.Compose([
     transforms.Resize(200),
     transforms.RandomCrop(150),
     transforms.RandomHorizontalFlip(),
+    # normalizing based on arbitrary guidance from StackOverflow
     transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
     ])
 
 # test transform definition
+# same as train for now... why do I want this to be the same? Do I?
 transform_test = transforms.Compose([
     transforms.PILToTensor(),
     transforms.Resize(200),
@@ -215,6 +218,7 @@ transform_test = transforms.Compose([
     ])
 
 # defining our test/train datasets
+### these remain separate just in case I decide to do independent transform configs
 # train dataset
 flags_train = FlagsDataset(csv_file = csv_file, 
                            data_root = data_folder, 
@@ -223,6 +227,10 @@ flags_train = FlagsDataset(csv_file = csv_file,
 flags_test = FlagsDataset(csv_file = csv_file, 
                           data_root = data_folder, 
                           transform = transform_test)
+
+#%% Visualizing our transformed images
+
+### add visualizations???
 
 #%% Defining our dataloaders
 
@@ -244,10 +252,11 @@ dataloader_test = torch.utils.data.DataLoader(flags_test,
 
 #%% Model definition 
 
-class CNN(nn.Module):
+### section needs heavy revision
+class FlagsCNN(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
-        
+        super(FlagsCNN, self).__init__()
+        # these lines define convolutions
         self.conv1 = nn.Sequential(
             nn.Conv2d(
                 ### channels???
@@ -262,11 +271,14 @@ class CNN(nn.Module):
             ### do we have a 2d image???
             nn.MaxPool2d(kernel_size = 2),
             )
+        # this model, as written, has two convolution layers
+        ### how many convolution layers do we want?
         self.conv2 = nn.Sequential(
             nn.Conv2d(16, 32, 5, 1, 2),
             nn.ReLU(),
             nn.MaxPool2d(2),
         )
+        ### how do we determine the contents of the convolution layers?
         
         # fully connected layer, output 3 classes
         ### what are the other dimensions doing here???
@@ -282,3 +294,32 @@ class CNN(nn.Module):
         output = self.out(x)
         return output, x # now we have x for visualization
     
+### the official PyTorch documentation version:
+# https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
+
+
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+net = Net()
+
+    
+#%% Training the model 
+
