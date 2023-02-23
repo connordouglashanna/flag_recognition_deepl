@@ -163,7 +163,7 @@ if __name__ == '__main__':
     # print statement to check observations
     print("This dataset contains a total of " + str(len(flags_pilot)) + " observations.")
     # inspecting five individual tensorized observations at random
-    for i in range(5):
+    for i in range(3):
         idx = torch.randint(len(flags_pilot), (1,))
         idx = idx.item()
         print(flags_pilot[idx])
@@ -252,6 +252,50 @@ dataloader_test = torch.utils.data.DataLoader(flags_test,
 
 #%% Model definition 
 
+# selecting a device
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using {device} device")
+    
+### the official PyTorch documentation version:
+# https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
+
+# and the official task-specific PyTorch documentation/explainer:
+# https://pytorch.org/tutorials/beginner/basics/buildmodel_tutorial.html
+
+# link explaining how/why layers are chosen:
+# https://stackoverflow.com/questions/53784998/how-are-the-pytorch-dimensions-for-linear-layers-calculated
+
+# queueing network definition
+class Net(nn.Module):
+    # initializing neural network
+    # this contains all of our neural network layers...
+    def __init__(self):
+        # the arguments in super() differ between the two tutorials
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        # these appear to be the linear processing layers, in second tutorial
+        # "applies a linear transformation to an object having specified shape, features(?)
+        # these alternate with ReLU feedback functions....
+        # "applies the rectified linear unit function element-wise"
+        # has args dimensions, das it
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+net = Net()
+
 ### section needs heavy revision
 class FlagsCNN(nn.Module):
     def __init__(self):
@@ -293,33 +337,7 @@ class FlagsCNN(nn.Module):
         x = x.view(x.size(0), -1)
         output = self.out(x)
         return output, x # now we have x for visualization
-    
-### the official PyTorch documentation version:
-# https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
 
-class Net(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
-
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = torch.flatten(x, 1) # flatten all dimensions except batch
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
-net = Net()
-
-    
 #%% Training the model 
 
