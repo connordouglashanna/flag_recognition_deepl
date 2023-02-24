@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 from torch.autograd import Variable
 from torch import optim
+from torch import save, load
 
 #%% Mass renaming
 
@@ -304,4 +305,24 @@ loss_fn = nn.CrossEntropyLoss()
 
 #%% Training the model 
 
+# defining epochs
+num_epochs = 10
 
+# training using loops
+if __name__ == "__main__":
+    for epoch in range(10): # training for 10 epochs
+        for batch in dataloader_train:
+            X, y = batch
+            X, y = X.to(device), y.to(device)
+            yhat = FlagsModel(X)
+            loss = loss_fn(yhat, y)
+            
+            # applying backpropagation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+        print(f"Epoch {epoch} loss is {loss.item()}")
+        
+    with open('model_state.pt', 'wb') as f:
+        save(FlagsModel.state_dict(), f)
