@@ -195,10 +195,10 @@ for i in range(10):
             
 # train transform definition
 transform_train = transforms.Compose([
-    transforms.PILToTensor(),
+    transforms.RandomHorizontalFlip(),
     transforms.Resize(200),
     transforms.RandomCrop(150),
-    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
     # normalizing based on arbitrary guidance from StackOverflow
     transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
     ])
@@ -206,10 +206,10 @@ transform_train = transforms.Compose([
 # test transform definition
 # same as train for now... why do I want this to be the same? Do I?
 transform_test = transforms.Compose([
-    transforms.PILToTensor(),
+    transforms.RandomHorizontalFlip(),
     transforms.Resize(200),
     transforms.RandomCrop(150),
-    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
     transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
     ])
 
