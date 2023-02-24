@@ -19,6 +19,7 @@ from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 import torch.nn as nn
 from torch.autograd import Variable
+from torch import optim
 
 #%% Mass renaming
 
@@ -262,38 +263,45 @@ print(f"Using {device} device")
 # link explaining how/why layers are chosen:
 # https://stackoverflow.com/questions/53784998/how-are-the-pytorch-dimensions-for-linear-layers-calculated
 
-# queueing network definition
-class Net(nn.Module):
+# input/output layers selected based on this
+# https://www.youtube.com/watch?v=mozBidd58VQ
+# and this
+# https://cs231n.github.io/convolutional-networks/
+
+# the latter of the above two was highly recommended by someone from the torch forums
+
+# defining our neural net class
+class FlagsModel(nn.Module):
     # initializing neural network
     # this contains all of our neural network layers...
-    ## note that our images should now be 150x150 since we did the randomcrop and resize
+    ## note that our images should now be 150x150x3 since we did the randomcrop and resize
     def __init__(self):
         # the arguments in super() differ between the two tutorials
         # what is this line doing?
         super().__init__()
-        ## these are the layer definitions which are then arranged in forward()
         self.model = nn.Sequential(
-            nn.Conv2d(3, 150, (3, 3)),
+            nn.Conv2d(3, 144, (7, 7)),
             nn.ReLU(),
-            nn.Conv2d(3, 150, (3, 3)),
+            nn.Conv2d(144, 288, (7, 7)),
             nn.ReLU(),
-            nn.Conv2d(3, 150, (3, 3)),
+            nn.Conv2d(288, 288, (7, 7)),
             nn.ReLU(),
             nn.Flatten(),
-            nn.Linear(in_features, 3)
+            nn.Linear(288*(150-6)*(150-6), 3)
             )
-        # these appear to be the linear processing layers, in second tutorial
-        # "applies a linear transformation to an object having specified shape, features(?)
-        # these alternate with ReLU feedback functions....
-        # "applies the rectified linear unit function element-wise"
-        # has args dimensions, das it
 
     def forward(self, x):
         return self.model(x)
 
-net = Net()
+# instancing our neural network
+FlagsModel = FlagsModel().to(device) # sending our model to our device from earlier
 
+# defining our optimizer
+optimizer = optim.Adam(FlagsModel.parameters(), lr = 0.01)
 
+# setting a loss function
+loss_fn = nn.CrossEntropyLoss()
 
 #%% Training the model 
+
 
