@@ -309,20 +309,55 @@ loss_fn = nn.CrossEntropyLoss()
 num_epochs = 10
 
 # training using loops
-if __name__ == "__main__":
-    for epoch in range(10): # training for 10 epochs
-        for batch in dataloader_train:
-            X, y = batch
-            X, y = X.to(device), y.to(device)
-            yhat = FlagsModel(X)
-            loss = loss_fn(yhat, y)
+#if __name__ == "__main__":
+#    for epoch in range(10): # training for 10 epochs
+#        for batch in dataloader_train:
+            ### error lives in this line right here!
+#            X, y = batch
+#            X, y = X.to(device), y.to(device)
+#            yhat = FlagsModel(X)
+#            loss = loss_fn(yhat, y)
             
             # applying backpropagation
+#            optimizer.zero_grad()
+#            loss.backward()
+#            optimizer.step()
+            
+#        print(f"Epoch {epoch} loss is {loss.item()}")
+        
+#    with open('model_state.pt', 'wb') as f:
+#        save(FlagsModel.state_dict(), f)
+        
+# alternative training approach from "baby's first" code
+def train(num_epochs, cnn, dataloader):
+    
+    #assigning alias?
+    cnn.train()
+    
+    # TRAIN BBY TRAIN
+    total_step = len(dataloader)
+    
+    for epoch in range(num_epochs):
+        for i, (image, class_index) in enumerate(dataloader):
+            
+            # gives batch data, normalize x when iterate train_loader
+            b_x = Variable(image) 
+            b_y = Variable(class_index)
+            
+            output = cnn(b_x)[0]
+            loss = loss_fn(output, b_y)
+            
+            # clear gradients for this training step   
             optimizer.zero_grad()
+            
+            # backpropagation, compute gradients 
             loss.backward()
             optimizer.step()
             
-        print(f"Epoch {epoch} loss is {loss.item()}")
-        
-    with open('model_state.pt', 'wb') as f:
-        save(FlagsModel.state_dict(), f)
+            if (i+1) % 100 == 0:
+                print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}' 
+                       .format(epoch + 1, num_epochs, i + 1, 
+                               total_step, loss.item()))    
+
+# running our training 
+train(num_epochs, cnn = FlagsModel, dataloader = dataloader_train)
