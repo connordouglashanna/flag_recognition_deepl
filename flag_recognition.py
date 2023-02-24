@@ -190,12 +190,6 @@ for i in range(10):
 
 ### building transforms for our dataset: needs update
 ### note that updates should come after model is built to aid in tuning
-            # desired transforms include: 
-                #transforms.RandomHorizontalFlip()
-                #transforms.normalize()
-                # set size to 100x100
-                #transforms.FiveCrop()
-                #transforms.Resize()
             
 # train transform definition
 transform_train = transforms.Compose([
@@ -252,6 +246,9 @@ dataloader_test = torch.utils.data.DataLoader(flags_test,
 
 #%% Model definition 
 
+# finding our resulting tensor size for a given sample
+# our image is a color image so it is 150x150x3
+
 # selecting a device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
@@ -269,74 +266,33 @@ print(f"Using {device} device")
 class Net(nn.Module):
     # initializing neural network
     # this contains all of our neural network layers...
+    ## note that our images should now be 150x150 since we did the randomcrop and resize
     def __init__(self):
         # the arguments in super() differ between the two tutorials
+        # what is this line doing?
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        ## these are the layer definitions which are then arranged in forward()
+        self.model = nn.Sequential(
+            nn.Conv2d(3, 150, (3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(3, 150, (3, 3)),
+            nn.ReLU(),
+            nn.Conv2d(3, 150, (3, 3)),
+            nn.ReLU(),
+            nn.Flatten(),
+            nn.Linear(in_features, 3)
+            )
         # these appear to be the linear processing layers, in second tutorial
         # "applies a linear transformation to an object having specified shape, features(?)
         # these alternate with ReLU feedback functions....
         # "applies the rectified linear unit function element-wise"
         # has args dimensions, das it
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = torch.flatten(x, 1) # flatten all dimensions except batch
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
+        return self.model(x)
 
 net = Net()
 
-### section needs heavy revision
-class FlagsCNN(nn.Module):
-    def __init__(self):
-        super(FlagsCNN, self).__init__()
-        # these lines define convolutions
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(
-                ### channels???
-                in_channels = 1,
-                out_channels = 16, 
-                kernel_size = 5,
-                stride = 1,
-                padding = 2,
-                ),
-            # optimization function, most likely leave this alone
-            nn.ReLU(),
-            ### do we have a 2d image???
-            nn.MaxPool2d(kernel_size = 2),
-            )
-        # this model, as written, has two convolution layers
-        ### how many convolution layers do we want?
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(16, 32, 5, 1, 2),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-        )
-        ### how do we determine the contents of the convolution layers?
-        
-        # fully connected layer, output 3 classes
-        ### what are the other dimensions doing here???
-        self.out = nn.Linear(32 * 7 * 7, 3)
-        
-    def forward(self, x):
-        ### what is happening here???
-        x = self.conv1(x)
-        x = self.conv2(x)
-        
-        # flattening the output of conv2 to (batch_size, 32 * 7 * 7)
-        x = x.view(x.size(0), -1)
-        output = self.out(x)
-        return output, x # now we have x for visualization
 
 
 #%% Training the model 
