@@ -279,7 +279,7 @@ class FlagsModel(nn.Module):
     def __init__(self):
         # the arguments in super() differ between the two tutorials
         # what is this line doing?
-        super().__init__()
+        super(FlagsModel, self).__init__()
         self.model = nn.Sequential(
             nn.Conv2d(3, 144, (7, 7)),
             nn.ReLU(),
@@ -334,11 +334,13 @@ def train(num_epochs, cnn, dataloader):
     #assigning alias?
     cnn.train()
     
-    # TRAIN BBY TRAIN
+    # setting our total number of steps? 
     total_step = len(dataloader)
     
     for epoch in range(num_epochs):
-        for i, (image, class_index) in enumerate(dataloader):
+        # mismatch is between the expected values after i and the enumerate(dataloader) which prints 1?
+        for i, (image, class_name, class_index) in enumerate(dataloader):
+            print("This is an item from the dataloader")
             
             # gives batch data, normalize x when iterate train_loader
             b_x = Variable(image) 
@@ -354,7 +356,7 @@ def train(num_epochs, cnn, dataloader):
             loss.backward()
             optimizer.step()
             
-            if (i+1) % 100 == 0:
+            if (i+1) % 50 == 0:
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}' 
                        .format(epoch + 1, num_epochs, i + 1, 
                                total_step, loss.item()))    
