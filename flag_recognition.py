@@ -340,6 +340,8 @@ def train(num_epochs, cnn, dataloader):
     for epoch in range(num_epochs):
         # mismatch is between the expected values after i and the enumerate(dataloader) which prints 1?
         for batch_id, sample in enumerate(dataloader):
+            print(sample['image'])
+            break
             
             image, class_index = sample['image'], sample['class_index']
             # cuda method was copied from someone else's documentation, check to make sure you follow code path
