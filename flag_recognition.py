@@ -339,15 +339,18 @@ def train(num_epochs, cnn, dataloader):
     
     for epoch in range(num_epochs):
         # mismatch is between the expected values after i and the enumerate(dataloader) which prints 1?
-        for i, (image, class_name, class_index) in enumerate(dataloader):
-            print("This is an item from the dataloader")
+        for batch_id, sample in enumerate(dataloader):
             
+            image, class_index = sample['image'], sample['class_index']
+            # cuda method was copied from someone else's documentation, check to make sure you follow code path
+            
+            ### variable has been deprecated, remove and smooth
             # gives batch data, normalize x when iterate train_loader
-            b_x = Variable(image) 
-            b_y = Variable(class_index)
+            batch_in = image 
+            batch_target = class_index
             
-            output = cnn(b_x)[0]
-            loss = loss_fn(output, b_y)
+            output = cnn(batch_in)[0]
+            loss = loss_fn(output, batch_target)
             
             # clear gradients for this training step   
             optimizer.zero_grad()
