@@ -342,17 +342,16 @@ def train(num_epochs, cnn, dataloader):
         for batch_id, sample in enumerate(dataloader):
             print(sample['image'])
             break
+        
+        for i, (image, class_name, class_index) in enumerate(dataloader):
+            print("This is an item from the dataloader")
             
-            image, class_index = sample['image'], sample['class_index']
-            # cuda method was copied from someone else's documentation, check to make sure you follow code path
-            
-            ### variable has been deprecated, remove and smooth
             # gives batch data, normalize x when iterate train_loader
-            batch_in = image 
-            batch_target = class_index
+            b_x = Variable(image) 
+            b_y = Variable(class_index)
             
-            output = cnn(batch_in)[0]
-            loss = loss_fn(output, batch_target)
+            output = cnn(b_x)[0]
+            loss = loss_fn(output, b_y)
             
             # clear gradients for this training step   
             optimizer.zero_grad()
